@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Replacement Strategies</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #eef2f3;
+            padding-top: 60px;
+        }
+        .navbar {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .navbar-brand, .navbar-nav > li > a {
+            color: #ffffff !important;
+        }
+        .container-main, .container-accordion {
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header-text {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .accordion {
+            background-color: #f8f9fa;
+            color: #333;
+            cursor: pointer;
+            padding: 15px;
+            width: 100%;
+            text-align: left;
+            border: none;
+            border-radius: 8px;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+        .accordion:hover, .accordion.active {
+            background-color: #007bff;
+            color: #fff;
+        }
+        .panel {
+            padding: 0 15px;
+            background-color: white;
+            display: none;
+            overflow: hidden;
+            border-radius: 0 0 8px 8px;
+        }
+        .panel-content {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #ddd;
+            border-radius: 0 0 8px 8px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">Page Replacement</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="Homepage.html">Home</a></li>
+                <li><a href="FIFO.html">FIFO</a></li>
+                <li><a href="OPT.html">OPT</a></li>
+                <li><a href="LRU.html">LRU</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container-main">
+        <h2 class="header-text">Memory Management Overview</h2>
+        <p>In modern operating systems, efficient memory management is crucial to ensure optimal performance. Page replacement algorithms are employed to manage how pages are replaced in memory when a page fault occurs. This ensures that the most critical data is readily accessible, minimizing the overall number of page faults.</p>
+    </div>
+    <div class="container-accordion">
+        <h2 class="header-text">Page Replacement Algorithms</h2>
+        <button class="accordion">FIFO (First In First Out)</button>
+        <div class="panel">
+            <div class="panel-content">
+                <p>The FIFO algorithm removes the oldest page in memory, which was the first to be loaded.</p>
+                <ul>
+                    <li><b>Pros:</b> Simple to implement and understand.</li>
+                    <li><b>Cons:</b> May lead to higher page faults as it does not consider page usage frequency.</li>
+                </ul>
+            </div>
+        </div>
+        <button class="accordion">Optimal Replacement</button>
+        <div class="panel">
+            <div class="panel-content">
+                <p>The Optimal algorithm replaces the page that will not be used for the longest period of time in the future.</p>
+                <ul>
+                    <li><b>Pros:</b> Achieves the minimum number of page faults.</li>
+                    <li><b>Cons:</b> Requires future knowledge of page requests, which is often impractical.</li>
+                </ul>
+            </div>
+        </div>
+        <button class="accordion">LRU (Least Recently Used)</button>
+        <div class="panel">
+            <div class="panel-content">
+                <p>The LRU algorithm removes the page that has not been used for the longest period of time.</p>
+                <ul>
+                    <li><b>Pros:</b> More effective than FIFO, leveraging historical data to predict future needs.</li>
+                    <li><b>Cons:</b> Requires additional data structures to track page usage, which can increase complexity.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script>
+        // Accordion functionality
+        var accordions = document.getElementsByClassName("accordion");
+        for (var i = 0; i < accordions.length; i++) {
+            accordions[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.display === "block") {
+                    panel.style.display = "none";
+                } else {
+                    panel.style.display = "block";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Page Replacement</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin-top: 60px;
+        }
+        .navbar {
+            background-color: #343a40;
+            transition: all 0.3s ease-in-out;
+        }
+        .navbar .navbar-brand, .navbar .nav-link {
+            color: #ffffff;
+            transition: all 0.3s ease-in-out;
+        }
+        .navbar .nav-link:hover {
+            color: #007bff;
+        }
+        .container {
+            padding-top: 40px;
+        }
+        .form-container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+        }
+        .form-container:hover {
+            transform: translateY(-10px);
+        }
+        .btn-custom {
+            width: 100%;
+            background-color: #007bff;
+            border: none;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .btn-custom:hover {
+            background-color: #0056b3;
+        }
+        .btn-custom-secondary {
+            width: 100%;
+            background-color: #6c757d;
+            border: none;
+            margin-top: 10px;
+            transition: background-color 0.3s ease-in-out;
+        }
+        .btn-custom-secondary:hover {
+            background-color: #5a6268;
+        }
+        .table-container {
+            margin-top: 40px;
+            overflow-x: auto;
+        }
+        .results {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .results p {
+            margin: 0;
+        }
+        .results .text-danger {
+            font-weight: bold;
+        }
+        .results .text-success {
+            font-weight: bold;
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Page Replacement</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="Homepage.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="FIFO.html">FIFO</a></li>
+                <li class="nav-item"><a class="nav-link" href="OPT.html">OPT</a></li>
+                <li class="nav-item"><a class="nav-link" href="LRU.html">LRU</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="form-container fade-in">
+        <h1 class="text-center">Least Recently Used (LRU)</h1>
+        <form>
+            <div class="mb-3">
+                <label for="frames" class="form-label">Number of frames:</label>
+                <input type="number" id="frames" class="form-control" placeholder="Enter number of frames">
+            </div>
+            <div class="mb-3">
+                <label for="rs" class="form-label">Page reference string:</label>
+                <input type="text" id="rs" class="form-control" placeholder="Enter page reference string">
+            </div>
+            <button type="button" id="calcbtn" class="btn btn-custom" onclick="lru()">Simulate</button>
+            <button type="reset" class="btn btn-custom-secondary" id="resetbtn" style="display:none;" onClick="window.location.reload()">Reset</button>
+        </form>
+    </div>
+    
+    <div id="div" class="table-container fade-in"></div>
+    <div id="sp1" class="results fade-in"></div>
+    <div id="sp2" class="results fade-in"></div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+<script>
+var count = 0;
+var pages = [];
+var pf, ph, f, rs, txt;
+
+function lru() {
+    f = parseInt(document.getElementById("frames").value);
+    rs = document.getElementById("rs").value;
+    var isnum = /^\d+$/.test(rs);
+
+    if (f <= 0 || !isnum) {
+        alert("Invalid input! Ensure number of frames is positive and page reference string is numeric.");
+        return;
+    }
+
+    document.getElementById("resetbtn").style.display = "block";
+    pf = 0;
+    ph = 0;
+    var k = 0;
+    var l, least, index;
+    var i, row = Number(f) + 1, j, col = rs.length;
+    pages = Array.from({ length: row }, () => Array(col).fill("--"));
+
+    for (j = 0; j < col; j++) {
+        var smallest = -1;
+        var flag = false;
+        if (j > 0) {
+            for (i = 0; i < row - 1; i++) pages[i][j] = pages[i][j - 1];
+        }
+        for (i = 0; i < row - 1; i++) {
+            if (rs[k] == pages[i][j]) flag = true;
+        }
+        if (!flag) {
+            for (i = 0; i < row - 1; i++) {
+                if (pages[i][j] == "--") {
+                    smallest = i;
+                    break;
+                }
+            }
+            if (smallest != -1) {
+                pages[smallest][j] = rs[k];
+            } else {
+                index = 9999;
+                for (i = 0; i < row - 1; i++) {
+                    least = -2;
+                    for (l = j - 1; l >= 0; l--) {
+                        if (pages[i][j] == rs[l]) {
+                            least = l;
+                            break;
+                        }
+                    }
+                    if (least == -2) {
+                        index = -1;
+                        break;
+                    } else if (least < index) {
+                        index = least;
+                    }
+                }
+                for (i = 0; i < row - 1; i++) {
+                    if (pages[i][j] == rs[index]) break;
+                }
+                pages[i][j] = rs[k];
+            }
+            pages[row - 1][j] = "PF";
+            pf++;
+        } else {
+            ph++;
+            pages[row - 1][j] = "PH";
+        }
+        k++;
+    }
+
+    displayTable(row, col);
+    document.getElementById('calcbtn').style.display = "none";
+    document.getElementById("frames").disabled = true;
+    document.getElementById("rs").disabled = true;
+}
+
+function displayTable(row, col) {
+    var $table = $("<table class='table table-striped table-bordered fade-in'></table>");
+    var $tbody = $("<tbody></tbody>");
+
+    for (var i = 0; i < row; i++) {
+        var $line = $("<tr></tr>");
+        for (var j = 0; j < col; j++) {
+            if (i == row - 1) {
+                $line.append(`<td style="color:${pages[i][j] == 'PH' ? 'green' : 'red'}">${pages[i][j]}</td>`);
+            } else {
+                $line.append(`<td>${pages[i][j]}</td>`);
+            }
+        }
+        $tbody.prepend($line);
+    }
+
+    $table.append($tbody);
+    $table.appendTo($("#div"));
+    $("#sp1").html(`<p class="fade-in"><b>The number of page faults is:</b> <span class="text-danger">${pf}</span></p>`);
+    $("#sp2").html(`<p class="fade-in"><b>The number of page hits is:</b> <span class="text-success">${ph}</span></p>`);
+}
+</script>
+</body>
+</html>
